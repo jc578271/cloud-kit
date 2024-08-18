@@ -27,6 +27,13 @@ export type IOnAuthFinish<IBody, IJson> = (
   uploadFiles: (callback: (params: IUploadParams[]) => any) => any
 ) => Promise<any | void> | any | void;
 
+let _requestListener: <IBody, IJson>(req: IRequest<IBody, {}>,
+  res: IResponse<IJson>) => Promise<any>;
+
+export function requestListener(callback: typeof _requestListener) {
+  return _requestListener = callback;
+}
+
 export const parseFormData = <IBody, IJson>(
   req: IRequest<IBody, {}>,
   res: IResponse<IJson>
@@ -38,6 +45,7 @@ export const parseFormData = <IBody, IJson>(
     const onFile: (handler: IOnFile) => void = () => { }
     const onFinish: (handler: IOnFinish<IBody, IJson>) => void = async (handler) => {
       try {
+        await _requestListener(req, res);
         await handler(req, res, async () => { })
       } catch (e: any) {
         res.json({
@@ -49,7 +57,8 @@ export const parseFormData = <IBody, IJson>(
     }
     const onAuthFinish: (handler: IOnAuthFinish<IBody, IJson>) => void = async (handler) => {
       try {
-        const data = verifyAccessToken(req.body as any)
+        const data = verifyAccessToken(req.body as any);
+        await _requestListener(req, res);
         await handler(
           { ...req, verifiedData: data },
           res,
@@ -151,6 +160,7 @@ export const parseFormData = <IBody, IJson>(
   const onFinish = (handler: IOnFinish<IBody, IJson>) => {
     busboy.on('finish', async () => {
       try {
+        await _requestListener(req, res);
         await handler(
           { ...req, body: fields },
           //@ts-ignore
@@ -179,6 +189,7 @@ export const parseFormData = <IBody, IJson>(
 
         const data = verifyAccessToken(fields);
 
+        await _requestListener(req, res);
         await handler(
           { ...newReq, verifiedData: data },
           //@ts-ignore

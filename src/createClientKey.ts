@@ -14,8 +14,8 @@ export function createClientKey(params: {
   if (isNaN(parseInt(timestamp))) throw new Error('invalid_timestamp');
 
   if (isValidAuthenticKey) {
-    const client_key = require('uuid').v4();
-    const client_secret = require('crypto').randomBytes(48).toString('hex');
+    const client_key: string = require('uuid').v4();
+    const client_secret: string = require('crypto').randomBytes(48).toString('hex');
     const safeTimestamp = new Date(parseInt(timestamp) * 1000).valueOf() / 1000
 
     return {

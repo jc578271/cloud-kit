@@ -1,10 +1,7 @@
 import { onRequest as _onRequest } from "firebase-functions/v2/https";
-import { setGlobalOptions } from "firebase-functions/v2";
 import { Request, Response } from 'express';
 import { IOnAuthFinish, IOnFile, IOnFinish, parseFormData } from "./formData";
 import { IVerifiedData } from "./verifyAccessToken";
-
-setGlobalOptions({region: 'asia-southeast1'});
 
 export type IRequest<IBody, IParams> = Omit<Request, 'body' | 'params'>
 	& { body: IBody; params: IParams }

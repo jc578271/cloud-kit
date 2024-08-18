@@ -1,6 +1,6 @@
 export * from "./checkValid";
 export * from "./cleanObj";
-export * from "./createClientRequest";
+export * from "./createClientKey";
 export * from "./createRefreshToken";
 export * from "./formData";
 export * from "./onRequest";
