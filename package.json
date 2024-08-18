@@ -1,0 +1,19 @@
+{
+  "name": "cloud-kit",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "devDependencies": {
+    "axios": "^1.6.8",
+    "busboy": "^1.6.0",
+    "crypto": "^1.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
+    "md5": "^2.3.0",
+    "mime-types": "^2.1.35",
+    "sha256": "^0.2.0",
+    "uuid": "^9.0.1",
+    "@types/busboy": "^1.5.3",
+    "@types/sha256": "^0.2.2"
+  }
+}
