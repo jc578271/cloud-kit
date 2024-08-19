@@ -1,6 +1,6 @@
 import { onRequest as _onRequest } from "firebase-functions/v2/https";
 import { Request, Response } from 'express';
-import { IOnAuthFinish, IOnFile, IOnFinish, parseFormData } from "./formData";
+import { IOnFile, IOnFinish, parseFormData } from "./formData";
 import { IVerifiedData } from "./verifyAccessToken";
 
 export type IRequest<IBody, IParams> = Omit<Request, 'body' | 'params'>
@@ -44,32 +44,32 @@ export function onRequest<
 
 	return _onRequest(_handler)
 }
-export function onAuthRequest<
-	// IParams extends {[id: string]: any},
-	IBody extends { client_key: string, access_token: string },
-	IJson
->(
-	handler: (
-		onFinish: (handler: IOnAuthFinish<IBody, IJson>) => void,
-		onFile: (handler: IOnFile) => void,
-	) => any | Promise<any>
-) {
-	const _handler = async (
-		req: IRequest<IBody, {}>,
-		res: IResponse<IJson>
-	) => {
-		if (process.env.DEBUG) {
-			res.set('Access-Control-Allow-Origin', "*")
-			res.set('Access-Control-Allow-Methods', 'GET, POST');
-		}
-
-		const { onFile, onAuthFinish } = parseFormData(req, res);
-
-		handler(
-			onAuthFinish,
-			onFile,
-		)
-	}
-
-	return _onRequest(_handler)
-}
+// export function onAuthRequest<
+// 	// IParams extends {[id: string]: any},
+// 	IBody extends { client_key: string, access_token: string },
+// 	IJson
+// >(
+// 	handler: (
+// 		onFinish: (handler: IOnAuthFinish<IBody, IJson>) => void,
+// 		onFile: (handler: IOnFile) => void,
+// 	) => any | Promise<any>
+// ) {
+// 	const _handler = async (
+// 		req: IRequest<IBody, {}>,
+// 		res: IResponse<IJson>
+// 	) => {
+// 		if (process.env.DEBUG) {
+// 			res.set('Access-Control-Allow-Origin', "*")
+// 			res.set('Access-Control-Allow-Methods', 'GET, POST');
+// 		}
+//
+// 		const { onFile, onAuthFinish } = parseFormData(req, res);
+//
+// 		handler(
+// 			onAuthFinish,
+// 			onFile,
+// 		)
+// 	}
+//
+// 	return _onRequest(_handler)
+// }

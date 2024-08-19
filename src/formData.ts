@@ -1,7 +1,7 @@
 import Busboy, { FileInfo } from 'busboy';
 import { Readable, Writable } from "stream";
 import { IAuthRequest, IRequest, IResponse } from './onRequest';
-import { verifyAccessToken, } from './verifyAccessToken';
+// import { verifyAccessToken, } from './verifyAccessToken';
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
@@ -13,7 +13,7 @@ export type IOnFile = (
   info: FileInfo,
   pipe: () => any) => Promise<any | void> | any | void;
 
-interface IUploadParams { destination: string; filepath: string; id: string; info: IFile }
+export interface IUploadParams { destination: string; filepath: string; id: string; info: IFile }
 
 export type IOnFinish<IBody, IJson> = (
   req: IRequest<IBody, {}>,
@@ -55,28 +55,28 @@ export const parseFormData = <IBody, IJson>(
         })
       }
     }
-    const onAuthFinish: (handler: IOnAuthFinish<IBody, IJson>) => void = async (handler) => {
-      try {
-        const data = verifyAccessToken(req.body as any);
-        await _requestListener(req, res);
-        await handler(
-          { ...req, verifiedData: data },
-          res,
-          async () => { }
-        )
-      } catch (e: any) {
-        res.json({
-          code: 400,
-          message: e.message || e.toString() || 'unknown_error',
-          stack: process.env.DEBUG ? e.stack?.split('\n') || 'no stack' : undefined
-        })
-      }
-    }
+    // const onAuthFinish: (handler: IOnAuthFinish<IBody, IJson>) => void = async (handler) => {
+    //   try {
+    //     const data = verifyAccessToken(req.body as any);
+    //     await _requestListener(req, res);
+    //     await handler(
+    //       { ...req, verifiedData: data },
+    //       res,
+    //       async () => { }
+    //     )
+    //   } catch (e: any) {
+    //     res.json({
+    //       code: 400,
+    //       message: e.message || e.toString() || 'unknown_error',
+    //       stack: process.env.DEBUG ? e.stack?.split('\n') || 'no stack' : undefined
+    //     })
+    //   }
+    // }
 
     return {
       onFile,
       onFinish,
-      onAuthFinish
+      // onAuthFinish
     };
   }
   const busboy = Busboy({ headers: req.headers });
@@ -170,7 +170,7 @@ export const parseFormData = <IBody, IJson>(
             destination: fileIds[index],
             id: fileIds[index],
             info: fileInfos[index]
-          })).flat()))
+          }))))
       } catch (e: any) {
         res.json({
           code: 400,
@@ -182,34 +182,34 @@ export const parseFormData = <IBody, IJson>(
     busboy.end(req.body);
   }
 
-  const onAuthFinish = (handler: IOnAuthFinish<IBody, IJson>) => {
-    busboy.on('finish', async () => {
-      try {
-        const newReq = { ...req, body: fields };
+  // const onAuthFinish = (handler: IOnAuthFinish<IBody, IJson>) => {
+  //   busboy.on('finish', async () => {
+  //     try {
+  //       const newReq = { ...req, body: fields };
+  //
+  //       const data = verifyAccessToken(fields);
+  //
+  //       await _requestListener(req, res);
+  //       await handler(
+  //         { ...newReq, verifiedData: data },
+  //         //@ts-ignore
+  //         { ...res, json: (result) => res.status(result.code).json(result) },
+  //         (callback) => callback(filepaths.map((filepath, index) => ({
+  //           filepath,
+  //           destination: fileIds[index],
+  //           id: fileIds[index],
+  //           info: fileInfos[index]
+  //         })).flat()))
+  //     } catch (e: any) {
+  //       res.json({
+  //         code: 400,
+  //         message: e.message || e.toString() || 'unknown_error',
+  //         stack: process.env.DEBUG ? e.stack?.split('\n') || 'no stack' : undefined,
+  //       })
+  //     }
+  //   });
+  //   busboy.end(req.body);
+  // }
 
-        const data = verifyAccessToken(fields);
-
-        await _requestListener(req, res);
-        await handler(
-          { ...newReq, verifiedData: data },
-          //@ts-ignore
-          { ...res, json: (result) => res.status(result.code).json(result) },
-          (callback) => callback(filepaths.map((filepath, index) => ({
-            filepath,
-            destination: fileIds[index],
-            id: fileIds[index],
-            info: fileInfos[index]
-          })).flat()))
-      } catch (e: any) {
-        res.json({
-          code: 400,
-          message: e.message || e.toString() || 'unknown_error',
-          stack: process.env.DEBUG ? e.stack?.split('\n') || 'no stack' : undefined,
-        })
-      }
-    });
-    busboy.end(req.body);
-  }
-
-  return { onFile, onFinish, onAuthFinish }
+  return { onFile, onFinish }
 }
